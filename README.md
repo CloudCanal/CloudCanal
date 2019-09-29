@@ -5,7 +5,7 @@ Using Cloud Canal is simple:
 <ol>
   <li>Register yourself and your domain(s) at <a href="https://www.cloudcanal.io" target="_blank">https://www.cloudcanal.io</a></li>
   <li>Set up a Connector that maps to an API you'd like to use</li>
-  <li>Include this script (https://cdn.jsdelivr.net/gh/CloudCanal/CloudCanal.js@1/CloudCanal.min.js) after jQuery</li>
+  <li>Include this script (https://cdn.jsdelivr.net/gh/CloudCanal/CloudCanal@1/CloudCanal.min.js) after jQuery</li>
   <li>Add data-attributes to elements on your site</li>
 </ol>
 For more information, visit our <a href="https://www.cloudcanal.io" target="_blank">website</a>. Fun fact: the Cloud Canal web app was built using CloudCanal.js!
