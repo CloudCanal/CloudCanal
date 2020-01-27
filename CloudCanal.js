@@ -20,10 +20,10 @@ function initializePage() {
   initializeAttrStartsWithSelector();
   // parse query string to an object
   queryParams = parseQueryString();
-  // fire any data-cc-on-load events
-  triggerLoadEvents();
   // find all cc forms on page and set up to link with corresponding endpoints
   setupForms();
+  // fire any data-cc-on-load events
+  triggerLoadEvents();
   // setup on-click events
   setupClickEvents();
   // setup on-change events
@@ -365,9 +365,7 @@ function triggerAction(value, element, response) {
       else {
         const endpoint = parseEndpoint(action);
         const container = $(
-          `[data-cc-array-container="${endpoint['instance']}_${
-            endpoint['id']
-          }"]`
+          `[data-cc-array-container="${endpoint['instance']}_${endpoint['id']}"]`
         );
         container
           .children()
