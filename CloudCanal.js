@@ -438,12 +438,12 @@ function loadArrays(targetedElements, status, response) {
       'data-cc-array-container',
       `${arrayEndpoint['instance']}_${arrayEndpoint['id']}`
     );
-    // create a clone of the template, noting its parent for placing future copies, and delete original
+    // create a clone of the template, noting its parent for placing future copies, and delete the contents of the parent element
     // this strange notation is so that we can save the array template to a global variable, for use later when adding elements to an array via an action
     window[
       `array_template_${arrayEndpoint['instance']}_${arrayEndpoint['id']}`
     ] = $(this).clone(true);
-    $(this).remove();
+    parentElement.html('');
 
     // make copies of the template in the DOM
     for (let i = 0; i < parsedArray[0].length; i++) {
