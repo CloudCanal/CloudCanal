@@ -490,7 +490,7 @@ function insertResponse(element, value) {
       var type = element.prop('type').toLowerCase();
       if (type === 'checkbox') {
         if (value == 'true') element.prop('checked', true);
-        else element.prop('checked', true);
+        else element.prop('checked', false);
       } else element.val(value);
       break;
 
