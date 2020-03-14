@@ -170,6 +170,11 @@ function prepareForm(form) {
   var endpoint = parseEndpoint(form.data('cc-endpoint'));
   // serialize the body based on "name" tag to be sent as JSON
   var body = form.serializeJSON();
+  //check to see if the clicked button includes a name and value attribute, and include in body if so
+  var submit_button_name = document.activeElement.getAttribute('name');
+  var submit_button_value = document.activeElement.getAttribute('value');
+  if (submit_button_name && submit_button_value)
+    body[submit_button_name] = submit_button_value;
   // disable all inputs that aren't already disabled
   const disabled = form.find(':input').filter(function() {
     return $(this).prop('disabled') === false;
@@ -754,3 +759,6 @@ Events:
         fcn: {code}
         {path_or_value}
 */
+
+if (!getCookie('api_token') && !getCookie('registration_message_shown'))
+  document.querySelector('#registration-popup').style.display = 'block';
