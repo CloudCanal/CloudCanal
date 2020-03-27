@@ -1,4 +1,3 @@
-'use strict';
 var ccUrl =
   'https://rrr6b3hn94.execute-api.us-east-2.amazonaws.com/prod/request';
 var queryParams;
