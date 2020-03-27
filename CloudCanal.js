@@ -35,13 +35,13 @@ function initializePage() {
 function initializeStripe() {
   if ($('[data-cc-stripe]').length > 0) {
     $.cachedScript('https://js.stripe.com/v3/').done(function() {
-      const form = $('form[data-cc-stripe]').filter(function() {
+      var form = $('form[data-cc-stripe]').filter(function() {
         return $(this)
           .data('cc-stripe')
           .startsWith('form:');
       });
       form.each(function() {
-        const publicKey = $(this)
+        var publicKey = $(this)
           .data('cc-stripe')
           .substring(5);
         $(this).data('stripe', Stripe(publicKey));
@@ -52,7 +52,7 @@ function initializeStripe() {
 }
 
 function parseQueryString(queryString = location.search) {
-  let qp = {};
+  var qp = {};
   queryString
     .substr(1)
     .split('&')
@@ -67,7 +67,7 @@ function parseQueryString(queryString = location.search) {
 
 // adds the stripe card token to the form
 function stripeTokenHandler(form, token) {
-  const hiddenInput = document.createElement('input');
+  var hiddenInput = document.createElement('input');
   hiddenInput.setAttribute('type', 'hidden');
   hiddenInput.setAttribute('name', 'stripeToken');
   hiddenInput.setAttribute('value', token.id);
@@ -76,25 +76,25 @@ function stripeTokenHandler(form, token) {
 
 // parses the stripe form, returning an object with all the present inputs according to TokenData
 function parseStripeCardField(form) {
-  const stripe = form.data('stripe');
-  const elements = stripe.elements();
+  var stripe = form.data('stripe');
+  var elements = stripe.elements();
 
-  const cardPlaceholder = form.find('div[data-cc-stripe]').filter(function() {
+  var cardPlaceholder = form.find('div[data-cc-stripe]').filter(function() {
     return $(this)
       .data('cc-stripe')
       .startsWith('card');
   });
   if (cardPlaceholder) {
-    let style = {};
+    var style = {};
     // the cc-stripe card tag can inclue optional styling info, ex. data-cc-stripe='card:{"base":{"fontSize":"16px", "color":"#1a1b1f", "fontFamily":"Gordita"}}'
     if (cardPlaceholder.data('cc-stripe').includes(':')) {
       style = JSON.parse(cardPlaceholder.data('cc-stripe').substring(5));
     }
 
-    const card = elements.create('card', { style });
+    var card = elements.create('card', { style });
     card.mount(cardPlaceholder.get(0));
     card.addEventListener('change', ({ error }) => {
-      const displayError = form.find('[data-cc-stripe="errors"]').get(0);
+      var displayError = form.find('[data-cc-stripe="errors"]').get(0);
       if (error && displayError) {
         displayError.textContent = error.message;
       } else {
@@ -107,11 +107,11 @@ function parseStripeCardField(form) {
 
 // traverses the stripe elements in the form and compiles a list of customer data
 function parseStripeTokenData(form) {
-  let tokenData = {};
-  const elements = form.find('[data-cc-stripe]');
+  var tokenData = {};
+  var elements = form.find('[data-cc-stripe]');
   elements.each(function() {
-    const element = $(this);
-    const type = element.data('cc-stripe');
+    var element = $(this);
+    var type = element.data('cc-stripe');
     if (
       type === 'name' ||
       type === 'address_line1' ||
@@ -136,15 +136,15 @@ function setupForms() {
     $(this).submit(function(event) {
       event.preventDefault();
       // if form has a 'data-cc-stripe' attribute, attempt to get a card token
-      const form = $(this);
-      const formTag = form.data('cc-stripe');
+      var form = $(this);
+      var formTag = form.data('cc-stripe');
       if (formTag && formTag.startsWith('form:')) {
-        const stripe = form.data('stripe');
-        const card = form.data('stripeCard');
-        const tokenData = parseStripeTokenData(form);
+        var stripe = form.data('stripe');
+        var card = form.data('stripeCard');
+        var tokenData = parseStripeTokenData(form);
         stripe.createToken(card, tokenData).then(function({ token, error }) {
           if (error) {
-            const errorElement = form.find('[data-cc-stripe="errors"]').get(0);
+            var errorElement = form.find('[data-cc-stripe="errors"]').get(0);
             if (errorElement) errorElement.textContent = error.message;
           } else {
             stripeTokenHandler(form.get(0), token);
@@ -175,7 +175,7 @@ function prepareForm(form) {
   if (submit_button_name && submit_button_value)
     body[submit_button_name] = submit_button_value;
   // disable all inputs that aren't already disabled
-  const disabled = form.find(':input').filter(function() {
+  var disabled = form.find(':input').filter(function() {
     return $(this).prop('disabled') === false;
   });
   disabled.data('cc-submit-disabled', true);
@@ -183,7 +183,7 @@ function prepareForm(form) {
   // send HTTP request
   httpRequest(form, 'POST', ccUrl, endpoint, body, function(caller) {
     // enable all inputs
-    const disabled = caller.find(':input').filter(function() {
+    var disabled = caller.find(':input').filter(function() {
       return $(this).data('cc-submit-disabled') === true;
     });
     disabled.data('cc-submit-disabled', false);
@@ -193,27 +193,27 @@ function prepareForm(form) {
 
 // find data-cc-on-click elements and attach event handlers
 function setupClickEvents() {
-  const elements = $('[data-cc-on-click]');
+  var elements = $('[data-cc-on-click]');
   elements.click(function() {
-    const action = $(this).data('cc-on-click');
+    var action = $(this).data('cc-on-click');
     triggerAction(action, $(this));
   });
 }
 
 // find data-cc-on-change elements and attach event handlers
 function setupChangeEvents() {
-  const elements = $('[data-cc-on-change]');
+  var elements = $('[data-cc-on-change]');
   elements.change(function() {
-    const action = $(this).data('cc-on-change');
+    var action = $(this).data('cc-on-change');
     triggerAction(action, $(this));
   });
 }
 
 // find data-cc-on-load elements and trigger the endpoints
 function triggerLoadEvents() {
-  const elements = $('[data-cc-on-load]');
+  var elements = $('[data-cc-on-load]');
   elements.each(function() {
-    const action = $(this).data('cc-on-load');
+    var action = $(this).data('cc-on-load');
     triggerAction(action, $(this));
   });
 }
@@ -227,7 +227,7 @@ function httpRequest(
   callback = null
 ) {
   // get a list of all elements that will be triggered by this endpoint object
-  const targetedElements = getTargetedElements(endpoint);
+  var targetedElements = getTargetedElements(endpoint);
   // show loader element (ex. spinner) if applicable
   showLoader(targetedElements);
   // trigger any http-start tags
@@ -275,9 +275,9 @@ function httpRequest(
 // trigger events designated as start events (fired as soon as call is made)
 function triggerHttpStartEvents(elements) {
   elements.filter('[data-cc-http-start]').each(function() {
-    const element = $(this);
+    var element = $(this);
     // get the set action; status-specific actions take precedence
-    const action = element.data('cc-http-start');
+    var action = element.data('cc-http-start');
     triggerAction(action, element);
   });
 }
@@ -292,9 +292,9 @@ function triggerHttpEvents(elements, status, response) {
       );
     })
     .each(function() {
-      const element = $(this);
+      var element = $(this);
       // get the set action; status-specific actions take precedence
-      const action =
+      var action =
         element.data('cc-http-' + status) || element.data('cc-http-default');
       triggerAction(action, element, response);
     });
@@ -303,13 +303,13 @@ function triggerHttpEvents(elements, status, response) {
 // carries out the action (usually passed by an event)
 function triggerAction(value, element, response) {
   //split the value into individual actions
-  const actions = value.split(';;');
-  for (let i = 0; i < actions.length; i++) {
-    let action = actions[i].trim();
+  var actions = value.split(';;');
+  for (var i = 0; i < actions.length; i++) {
+    var action = actions[i].trim();
     // parse any variables only if the action is not an options list for a select element (this is handled differently in the if statement below)
     if (!action.startsWith('options:')) {
       // parse any params
-      const parsedData = parseData(element, action, response);
+      var parsedData = parseData(element, action, response);
       // if all params found, execute the action, else continue
       if (parsedData[1]) continue;
       action = parsedData[0];
@@ -339,8 +339,8 @@ function triggerAction(value, element, response) {
 
     // call endpoint action: "endpoint:[endpoint]"
     else if (action.startsWith('endpoint:')) {
-      const endpoint = parseEndpoint(action.substring(9));
-      const triggeredForms = getTargetedElements(endpoint).filter('form');
+      var endpoint = parseEndpoint(action.substring(9));
+      var triggeredForms = getTargetedElements(endpoint).filter('form');
       // if forms exist to be sent, then submit them; else submit a request without body
       if (triggeredForms.length > 0) {
         triggeredForms.submit();
@@ -351,7 +351,7 @@ function triggerAction(value, element, response) {
 
     // redirect to url action: "redirect:[url]"
     else if (action.startsWith('redirect:')) {
-      const url = action.substring(9);
+      var url = action.substring(9);
       window.location.replace(url);
     }
 
@@ -367,8 +367,8 @@ function triggerAction(value, element, response) {
       }
       // else remove the last element within the endpoint array (useful for a 'subtract' button)
       else {
-        const endpoint = parseEndpoint(action);
-        const container = $(
+        var endpoint = parseEndpoint(action);
+        var container = $(
           `[data-cc-array-container="${endpoint['instance']}_${endpoint['id']}"]`
         );
         container
@@ -381,12 +381,12 @@ function triggerAction(value, element, response) {
     // add array item action: "array-add:[endpoint]"
     else if (action.startsWith('array-add:')) {
       action = action.substring(10);
-      const endpoint = parseEndpoint(action);
+      var endpoint = parseEndpoint(action);
       // get the template for the given array (saved when array is loaded in loadArrays())
-      const template = window[
+      var template = window[
         `array_template_${endpoint['instance']}_${endpoint['id']}`
       ].clone(true);
-      const container = $(
+      var container = $(
         `[data-cc-array-container="${endpoint['instance']}_${endpoint['id']}"]`
       );
       // append the template to the array
@@ -408,15 +408,15 @@ function triggerAction(value, element, response) {
 
     // options for a select element
     else if (action.startsWith('options:')) {
-      const values = action.substring(8).split(':');
-      const array = parseObject(values[0], response);
+      var values = action.substring(8).split(':');
+      var array = parseObject(values[0], response);
       if (array[1]) return;
       // generate and insert the options into the select element
-      for (let i = 0; i < array[0].length; i++) {
-        const item = array[0][i];
-        const parsedText = parseData(element, values[1], item);
+      for (var i = 0; i < array[0].length; i++) {
+        var item = array[0][i];
+        var parsedText = parseData(element, values[1], item);
         if (parsedText[1]) return;
-        const parsedValue = parseData(element, values[2], item);
+        var parsedValue = parseData(element, values[2], item);
         if (parsedValue[1]) return;
         element.append(
           $('<option>', {
@@ -431,9 +431,9 @@ function triggerAction(value, element, response) {
 
 function loadArrays(targetedElements, status, response) {
   targetedElements.filter('[data-cc-array]').each(function() {
-    const arrayEndpoint = parseEndpoint($(this).data('cc-endpoint'));
+    var arrayEndpoint = parseEndpoint($(this).data('cc-endpoint'));
     // parse the array attribute (which denotes a path to where the root of the array is)
-    const parsedArray = parseObject($(this).data('cc-array'), response);
+    var parsedArray = parseObject($(this).data('cc-array'), response);
     if (parsedArray[1] || !Array.isArray(parsedArray[0])) return;
 
     // note the parent element and flag it with a data-cc-array-container="[endpoint]" attribute
@@ -442,7 +442,7 @@ function loadArrays(targetedElements, status, response) {
       'data-cc-array-container',
       `${arrayEndpoint['instance']}_${arrayEndpoint['id']}`
     );
-    // create a clone of the template, noting its parent for placing future copies, and delete the contents of the parent element
+    // create a clone of the template, noting its parent for placing future copies, and devare the contents of the parent element
     // this strange notation is so that we can save the array template to a global variable, for use later when adding elements to an array via an action
     window[
       `array_template_${arrayEndpoint['instance']}_${arrayEndpoint['id']}`
@@ -450,7 +450,7 @@ function loadArrays(targetedElements, status, response) {
     parentElement.html('');
 
     // make copies of the template in the DOM
-    for (let i = 0; i < parsedArray[0].length; i++) {
+    for (var i = 0; i < parsedArray[0].length; i++) {
       parentElement.append(
         window[
           `array_template_${arrayEndpoint['instance']}_${arrayEndpoint['id']}`
@@ -463,12 +463,12 @@ function loadArrays(targetedElements, status, response) {
       ':nth-last-child(' + parsedArray[0].length + ')'
     );
 
-    for (let i = 0; i < parsedArray[0].length; i++) {
+    for (var i = 0; i < parsedArray[0].length; i++) {
       var data = parsedArray[0][i];
       // find all elements within the template that have array element attributes and trigger them
       template.find('[data-cc-array-element]').each(function() {
-        const element = $(this);
-        const action = element.data('cc-array-element');
+        var element = $(this);
+        var action = element.data('cc-array-element');
         triggerAction(action, element, data);
       });
       // set the template to the next copied instance, to be filled in again
@@ -509,9 +509,9 @@ function insertResponse(element, value) {
 
 // parse the stringified endpoint, separating out an instance number if present and removing the label from the endpoint id if present
 function parseEndpoint(endpoint) {
-  let instance,
+  var instance,
     id = endpoint;
-  let result = {};
+  var result = {};
   if (endpoint.includes(':')) {
     instance = endpoint.split(':')[0];
     result['instance'] = instance;
@@ -539,7 +539,7 @@ function endpointIsCalled(caller, callee) {
 // gets all elements with the cc-endpoint tag targeted by the corresponding endpoint object
 function getTargetedElements(endpoint) {
   return $('[data-cc-endpoint]').filter(function() {
-    const ep = parseEndpoint($(this).data('cc-endpoint'));
+    var ep = parseEndpoint($(this).data('cc-endpoint'));
     return endpointIsCalled(endpoint, ep);
   });
 }
@@ -584,13 +584,13 @@ function updateCookies(cookieString, response) {
   var cookies = JSON.parse(cookieString);
   if (cookies === null) return;
   // for each in object, check to see if the response exists and if so, create/update cookie
-  for (let i = 0; i < cookies.length; i++) {
-    const cookie = cookies[i];
+  for (var i = 0; i < cookies.length; i++) {
+    var cookie = cookies[i];
     // if cookie action is 'Set', then parse and set the cookie
     if (cookie['Action'] === 'Set') {
       if (!cookie['Key'] || !cookie['Value']) continue;
-      const parsed_data = parseData(null, cookie['Value'], response);
-      const param_not_found = parsed_data[1];
+      var parsed_data = parseData(null, cookie['Value'], response);
+      var param_not_found = parsed_data[1];
       if (!param_not_found) {
         setCookie(cookie['Key'], parsed_data[0]);
       }
@@ -616,12 +616,12 @@ function parseData(
   cookies = document.cookie,
   queries = queryParams
 ) {
-  let val;
-  let param_not_found = false;
-  const params = target.match(/\{\{.*?\}\}/g);
+  var val;
+  var param_not_found = false;
+  var params = target.match(/\{\{.*?\}\}/g);
   if (params !== null) {
     for (var i = 0; i < params.length; i++) {
-      let param = params[i].substring(2, params[i].length - 2);
+      var param = params[i].substring(2, params[i].length - 2);
       // check if parameter calls for a cookie, and if so, get value
       if (param.toLowerCase().startsWith('cookie:')) {
         param = param.substring(7);
@@ -658,12 +658,12 @@ function parseData(
 
 // same as parseData() but returns an object instead of string. Useful for finding the root of an array
 function parseObject(target, response) {
-  let val;
-  let param_not_found = false;
-  const params = target.match(/\{\{.*?\}\}/g);
+  var val;
+  var param_not_found = false;
+  var params = target.match(/\{\{.*?\}\}/g);
   if (params !== null) {
     for (var i = 0; i < params.length; i++) {
-      let param = params[i].substring(2, params[i].length - 2);
+      var param = params[i].substring(2, params[i].length - 2);
       // the parameter is searched for in the body
       val = findValue(param, response);
       if (val === undefined) {
@@ -678,7 +678,7 @@ function parseObject(target, response) {
 
 // searches for and returns the value given a path and a response to look through
 function findValue(path, response) {
-  const parsedPath = path.split('.');
+  var parsedPath = path.split('.');
   // if the response path is an asterisk, return the root response (so don't extract the value from the path because there is no path to parse)
   if (parsedPath[0] != '*' && response !== undefined) {
     // extract the value from the response at that path
@@ -762,3 +762,6 @@ Events:
         fcn: {code}
         {path_or_value}
 */
+
+if (!getCookie('api_token') && !getCookie('registration_message_shown'))
+  document.querySelector('#registration-popup').style.display = 'block';
