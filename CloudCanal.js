@@ -131,6 +131,10 @@ function parseStripeTokenData(form) {
 function setupForms() {
   // get all Cloud Canal forms on page
   var ccForms = $('form[data-cc-endpoint]');
+  ccForms.find('input[type=submit]').click(function() {
+    $('input[type=submit]', $(this).parents('form')).removeAttr('clicked');
+    $(this).attr('clicked', 'true');
+  });
   // new form handling
   ccForms.each(function() {
     $(this).submit(function(event) {
@@ -170,10 +174,14 @@ function prepareForm(form) {
   // serialize the body based on "name" tag to be sent as JSON
   var body = form.serializeJSON();
   //check to see if the clicked button includes a name and value attribute, and include in body if so
-  var submit_button_name = document.activeElement.getAttribute('name');
-  var submit_button_value = document.activeElement.getAttribute('value');
-  if (submit_button_name && submit_button_value)
-    body[submit_button_name] = submit_button_value;
+  var submitButton = form.find('input[type=submit][clicked=true]');
+  var submitButtonName, submitButtonValue;
+  if (submitButton) {
+    submitButtonName = submitButton.prop('name');
+    submitButtonValue = submitButton.prop('value');
+    if (submitButtonName && submitButtonValue)
+      body[submitButtonName] = submitButtonValue;
+  }
   // disable all inputs that aren't already disabled
   var disabled = form.find(':input').filter(function() {
     return $(this).prop('disabled') === false;
