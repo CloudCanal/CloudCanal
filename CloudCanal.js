@@ -770,6 +770,3 @@ Events:
         fcn: {code}
         {path_or_value}
 */
-
-if (!getCookie('api_token') && !getCookie('registration_message_shown'))
-  document.querySelector('#registration-popup').style.display = 'block';
